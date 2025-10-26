@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     profileImageUrl: { type: String },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 //Hash password before saving.
