@@ -27,11 +27,46 @@ export const addThousandsSeparator = (num) => {
     : formattedInteger;
 };
 
+// export const prepareExpenseBarChartData = (data = []) => {
+//   console.log(data);
+
+//   const chartData = data.map((item) => ({
+//     category: item.category,
+//     amount: item.amount,
+//   }));
+//   return chartData;
+// };
+
+// export const prepareIncomeBarChartData = (data = []) => {
+//   const sortedData = [...data].sort(
+//     (a, b) => new Date(a.date) - new Date(b.date)
+//   );
+//   const chartData = sortedData.map((item) => ({
+//     month: moment(item.date).format("Do MM"),
+//     amount: item.amount,
+//     source: item.source,
+//   }));
+//   return chartData;
+// };
+
 export const prepareExpenseBarChartData = (data = []) => {
-  const chartData = data.map((item) => ({
-    category: item.category,
-    amount: item.amount,
+  // Sort by date for a cleaner timeline
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+
+  // Group by category (sum up category totals)
+  const categoryMap = {};
+  sortedData.forEach((item) => {
+    const category = item.category || "Uncategorized";
+    categoryMap[category] = (categoryMap[category] || 0) + item.amount;
+  });
+
+  const chartData = Object.entries(categoryMap).map(([category, amount]) => ({
+    label: category,
+    amount,
   }));
+
   return chartData;
 };
 
@@ -40,9 +75,21 @@ export const prepareIncomeBarChartData = (data = []) => {
     (a, b) => new Date(a.date) - new Date(b.date)
   );
   const chartData = sortedData.map((item) => ({
-    month: moment(item.date).format("Do MM"),
+    label: moment(item.date).format("Do MMM"),
     amount: item.amount,
     source: item.source,
+  }));
+  return chartData;
+};
+
+export const prepareExpenseLineChartData = (data = []) => {
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+  const chartData = sortedData.map((item) => ({
+    month: moment(item?.date).format("Do MM"),
+    amount: item?.amount,
+    category: item?.category,
   }));
   return chartData;
 };

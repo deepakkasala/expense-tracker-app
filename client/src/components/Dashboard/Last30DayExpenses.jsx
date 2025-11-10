@@ -3,9 +3,13 @@ import { prepareExpenseBarChartData } from "../../utils/helper";
 import CustomBarChart from "../Charts/CustomBarChart";
 
 const Last30DayExpenses = ({ data }) => {
+  console.log(data);
+
   const [chartData, setChartData] = useState([]);
   useEffect(() => {
     const result = prepareExpenseBarChartData(data);
+    console.log(result);
+
     setChartData(result);
   }, [data]);
   return (

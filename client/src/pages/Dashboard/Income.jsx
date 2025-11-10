@@ -96,7 +96,25 @@ const Income = () => {
   };
 
   // handle download income details
-  const handleDownloadIncomeDetails = async () => {};
+  const handleDownloadIncomeDetails = async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.INCOME.DOWNLOAD_INCOME,
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "income_details.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
 
   useEffect(() => {
     console.log("Income Sideeffect");
