@@ -1,4 +1,4 @@
-export const VITE_API_URL = "http://localhost:3080";
+export const VITE_API_URL = import.meta.env.VITE_BASE_URL;
 export const API_PATHS = {
   AUTH: {
     LOGIN: "/api/auth/login",
