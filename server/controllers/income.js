@@ -60,22 +60,39 @@ const deleteIncome = async (req, res) => {
     });
   }
 };
-
 const downloadExcel = async (req, res) => {
   const userId = req.user.id;
+
   try {
     const incomes = await Income.find({ userId });
+
     const incomeData = incomes.map((income) => ({
       Source: income.source,
       Amount: income.amount,
       Date: income.date.toISOString().split("T")[0],
     }));
+
     const workbook = xlsx.utils.book_new();
     const worksheet = xlsx.utils.json_to_sheet(incomeData);
     xlsx.utils.book_append_sheet(workbook, worksheet, "Incomes");
-    xlsx.writeFile(workbook, "income_details.xlsx");
-    res.download("income_details.xlsx");
+
+    // ✅ Generate Excel file in memory (no disk write)
+    const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+
+    // ✅ Set headers for download
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=income_details.xlsx"
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    // ✅ Send buffer
+    res.send(buffer);
   } catch (error) {
+    console.error("Error generating income Excel:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

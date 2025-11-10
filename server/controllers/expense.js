@@ -62,10 +62,13 @@ const deleteExpense = async (req, res) => {
     });
   }
 };
+
 const downloadExcel = async (req, res) => {
   const userId = req.user.id;
+
   try {
     const expenses = await Expense.find({ userId });
+
     const expenseData = expenses.map((expense) => ({
       Category: expense.category,
       Amount: expense.amount,
@@ -75,9 +78,24 @@ const downloadExcel = async (req, res) => {
     const workbook = xlsx.utils.book_new();
     const worksheet = xlsx.utils.json_to_sheet(expenseData);
     xlsx.utils.book_append_sheet(workbook, worksheet, "Expenses");
-    xlsx.writeFile(workbook, "expense_details.xlsx");
-    res.download("expense_details.xlsx");
+
+    // ✅ Create in-memory Excel file
+    const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+
+    // ✅ Set response headers
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=expense_details.xlsx"
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    // ✅ Send file to client directly
+    res.send(buffer);
   } catch (error) {
+    console.error("Error generating expense Excel:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
