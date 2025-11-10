@@ -23,7 +23,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
-  console.log("Backend is running 🚀");
+  res.send("✅ Backend is running successfully on Vercel!");
 });
 
 mongoose
